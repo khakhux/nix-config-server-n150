@@ -65,6 +65,89 @@ flake.nix
 }
 ```
 
+modules/hardened-ssh.nix (con usuario fijo)
+```nix
+{ config, lib, ... }:
+
+{
+  config = {
+    services.openssh = {
+      enable = true;
+
+      settings = {
+        PermitRootLogin = "no";
+        PasswordAuthentication = false;
+        X11Forwarding = false;
+        AllowTcpForwarding = "no";
+        ClientAliveInterval = 300;
+        ClientAliveCountMax = 2;
+        MaxAuthTries = 3;
+        LoginGraceTime = "30s";
+        PermitEmptyPasswords = false;
+        UseDNS = false;
+        Compression = "no";
+        KexAlgorithms = [ "curve25519-sha256" ];
+        Ciphers = [ "chacha20-poly1305@openssh.com" ];
+        MACs = [ "hmac-sha2-512-etm@openssh.com" ];
+      };
+
+      openFirewall = true;
+
+      extraConfig = ''
+        AllowUsers alice
+      '';
+    };
+  };
+}
+```
+
+modules/hardened-ssh.nix (con usuarios como parametros)
+```nix
+# modules/hardened-ssh.nix
+{ config, lib, ... }:
+
+with lib;
+
+{
+  options = {
+    ssh.allowedUsers = mkOption {
+      type = types.listOf types.str;
+      default = [ alice ];
+      description = "List of users allowed to log in via SSH.";
+    };
+  };
+
+  config = {
+    services.openssh = {
+      enable = true;
+
+      settings = {
+        PermitRootLogin = "no";
+        PasswordAuthentication = false;
+        X11Forwarding = false;
+        AllowTcpForwarding = "no";
+        ClientAliveInterval = 300;
+        ClientAliveCountMax = 2;
+        MaxAuthTries = 3;
+        LoginGraceTime = "30s";
+        PermitEmptyPasswords = false;
+        UseDNS = false;
+        Compression = "no";
+        KexAlgorithms = [ "curve25519-sha256" ];
+        Ciphers = [ "chacha20-poly1305@openssh.com" ];
+        MACs = [ "hmac-sha2-512-etm@openssh.com" ];
+      };
+
+      openFirewall = true;
+
+      extraConfig = mkIf (config.ssh.allowedUsers != []) ''
+        AllowUsers ${concatStringsSep " " config.ssh.allowedUsers}
+      '';
+    };
+  };
+}
+```
+
 modules/common-users.nix
 ```nix
 { config, pkgs, ... }:
@@ -109,6 +192,8 @@ hosts/minipc.nix
 ```nix
 { config, pkgs, ... }:
 
+{ ssh.allowedUsers = [ "alice" "admin" ]; }
+
 let
   staticNetwork = import ../modules/static-network.nix {
     interfaceName = "enp3s0";
@@ -119,9 +204,36 @@ in
   imports = [
     staticNetwork
     ../modules/common-server.nix
+    ../modules/docker.nix
+    ../modules/common-users.nix
+    ../modules/networking.nix
+    ../modules/home/alice.nix 
   ];
 
   networking.hostName = "minipc";
+
+  users.users.alice = {
+    isNormalUser = true;
+    home = "/home/alice";
+    extraGroups = [ "wheel" "docker" ];
+    openssh.authorizedKeys.keys = [
+      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC..." # your SSH key here
+    ];
+  };
+
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
+  home-manager.users.alice = import ../modules/home/alice.nix;
+
+  services.openssh.enable = true;
+  services.openssh.settings.PermitRootLogin = "no";
+
+  time.timeZone = "UTC";
+  i18n.defaultLocale = "en_US.UTF-8";
+
+  nixpkgs.config.allowUnfree = true;
+
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 }
 ```
 
@@ -240,7 +352,7 @@ Hace falta si uso flakes?
 nixos-generate-config --root /mnt
 ```
 
-## SOPS for Secrets
+# SOPS for Secrets
 
 ### Install sops-nix
 
@@ -413,97 +525,17 @@ nixos-enter --root /mnt -c 'passwd cacu'
 reboot
 ```
 
-# Multiple hosts setup
+# Extra tasks
 
-```bash
-nixos-config/
-├── flake.nix
-├── flake.lock
-├── hosts/
-│   ├── minipc.nix
-│   ├── laptop.nix
-│   └── server.nix
-├── modules/
-│   ├── docker.nix
-│   ├── common-users.nix
-│   └── networking.nix
-├── secrets/
-│   └── secrets.yaml (sops)
-├── hardware/
-│   └── minipc-hardware.nix
-```
+- geerlingguy.security
+- ansible-role-hardeningssh
+- mfa: google-authenticator
+- https://github.com/khakhux/domotica-ansible/blob/main/tasks/configure-git.yml
+- install jq
+- Create directories: /docker_data
 
-flake.nix
-```nix
-{
-  description = "My NixOS multi-host config";
-
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-    flake-utils.url = "github:numtide/flake-utils";
-    sops-nix.url = "github:Mic92/sops-nix";
-  };
-
-  outputs = { self, nixpkgs, flake-utils, sops-nix, ... }:
-    {
-      nixosConfigurations = {
-        minipc = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            ./hosts/minipc.nix
-            ./hardware/minipc-hardware.nix
-            sops-nix.nixosModules.sops
-          ];
-        };
-        laptop = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            ./hosts/laptop.nix
-            ./hardware/laptop-hardware.nix
-            sops-nix.nixosModules.sops
-          ];
-        };
-      };
-    };
-}
-```
-
-modules/common-users.nix
-```nix
-{ config, pkgs, ... }:
-
-{
-  users.users.alice = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "docker" ];
-    shell = pkgs.zsh;
-  };
-
-  programs.zsh.enable = true;
-}
-```
-
-hosts/minipc.nix
-```nix
-{ config, pkgs, ... }:
-
-{
-  imports = [
-    ../modules/common-users.nix
-    ../modules/docker.nix
-    ../modules/networking.nix
-  ];
-
-  networking.hostName = "minipc";
-
-  services.openssh.enable = true;
-
-  swapDevices = [
-    { device = "/swapfile"; size = 8192; }
-  ];
-}
-```
-
+Para más adelante:
+- https://github.com/khakhux/domotica-ansible/blob/main/2_playbook-domotica.yaml
 
 # Use yubikey to generate ssh keys
 
@@ -516,3 +548,35 @@ This creates:
 ~/.ssh/id_ed25519_sk.pub
 
 Add the .pub key to your server.
+
+# Use proxmox vm for nixos learning
+
+Create a New VM in Proxmox
+- VM ID / Name: Name it something like nixos-lab
+- OS Type: Choose "Other"
+- ISO Image: Upload the NixOS ISO and select it
+- System:
+  - UEFI BIOS (optional but future-proof)
+  - Enable QEMU Guest Agent (recommended)
+- Hard Disk: 10–20 GB is plenty for testing
+- CPU: 2 cores is sufficient
+- RAM: 2–4 GB
+- Network: virtio
+
+Boot Into the Installer
+- Start the VM
+- Open the Proxmox console
+- Boot into the live NixOS environment
+
+Install NixOS
+
+Take a Snapshot Before First Reboot
+- Use Proxmox's snapshot feature once NixOS is installed but before you reboot for the first time.
+
+Enable the QEMU guest agent if you want better integration:
+hosts/vm.nix
+```nix
+services.qemuGuest.enable = true;
+```
+
+check: systemctl status qemu-guest-agent.service
