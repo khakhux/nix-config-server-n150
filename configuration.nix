@@ -4,10 +4,18 @@
 
 { config, lib, pkgs, ... }:
 
+let
+  staticNetwork = import ./modules/static-network.nix {
+    interfaceName = "ens18";
+    ipAddress = "192.168.1.248";
+  };
+in
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [
       ./hardware-configuration.nix
+    staticNetwork
+    ./modules/hardened-ssh.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -17,15 +25,6 @@
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
-    interfaces.ens18 = {
-      useDHCP = false;
-      ipv4.addresses = [{
-        address = "192.168.1.248";
-        prefixLength = 24;
-      }];
-    };
-    defaultGateway = "192.168.1.1";
-    nameservers = [ "192.168.1.243" "8.8.8.8" ];
   };
 
   time.timeZone = "Europe/Madrid";
@@ -80,7 +79,7 @@
   };
 
   # programs.firefox.enable = true;
-  programs.nix-ld.enable = true;
+  programs.nix-ld.enable = true; # for remote access via vscode
 
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
@@ -102,15 +101,6 @@
   # };
 
   # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  services.openssh = {
-    enable = true;
-    #settings = {
-    #  PermiRootLogin = "no";
-    #  PasswordAuthentication = true;
-    #};
-  };
 
   services.qemuGuest.enable = true;
 
