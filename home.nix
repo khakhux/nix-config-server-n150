@@ -11,9 +11,13 @@
   home.stateVersion = "25.05";
   programs.bash = {
     enable = true;
-    shellAliases = {
-      nrs = "sudo nixos-rebuild switch --flake ~/nix-config-server-n150#nixos";
-    };
+    shellAliases = { };
+    initExtra = ''
+      nrs() {
+        local host=$(hostname)
+        sudo nixos-rebuild switch --flake ~/nix-config-server-n150#"$host"
+      }
+    '';
   };
 
 home.packages = with pkgs; [    
