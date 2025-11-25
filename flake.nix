@@ -10,11 +10,11 @@
   outputs = { self, nixpkgs, home-manager, ... }:
     let
       system = "x86_64-linux";
-    in {
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      
+      mkHost = hostName: nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [
-          ./hosts/nixos.nix
+          ./hosts/${hostName}.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
@@ -23,6 +23,12 @@
             home-manager.backupFileExtension = "backup";
           }
         ];
+      };
+    in {
+      nixosConfigurations = {
+        nixos = mkHost "nixos";
+        # Add more hosts like this:
+        # other-host = mkHost "other-host";
       };
     };
 }
