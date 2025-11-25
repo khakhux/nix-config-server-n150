@@ -20,7 +20,7 @@ with lib;
         PermitRootLogin = "no";
         PasswordAuthentication = false;
         X11Forwarding = false;
-        AllowTcpForwarding = "no";
+        AllowTcpForwarding = "yes"; # for vscode access
         ClientAliveInterval = 300;
         ClientAliveCountMax = 2;
         MaxAuthTries = 3;
