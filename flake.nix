@@ -14,7 +14,7 @@
       mkHost = hostName: nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [
-          ./hosts/${hostName}.nix
+          ./hosts/${hostName}/configuration.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
