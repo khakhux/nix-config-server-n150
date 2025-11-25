@@ -10,6 +10,7 @@
   outputs = { self, nixpkgs, home-manager, ... }:
     let
       system = "x86_64-linux";
+      users = import ./users.nix;
       
       mkHost = hostName: nixpkgs.lib.nixosSystem {
         inherit system;
@@ -19,7 +20,7 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.cacu = import ./home.nix;
+            home-manager.users.${users.mainUser} = import ./hosts/${hostName}/home.nix;
             home-manager.backupFileExtension = "backup";
           }
         ];
