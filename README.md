@@ -2,13 +2,28 @@
 
 My nixos configuration files.
 
-# Configuration files
+# Config files layout
 
-## Templates
+```pgsql
+nixos/
+├── flake.nix
+├── users.nix (main username config)
+├── ssh-keys/ (public keys for ssh clients)
+├── modules/
+    └── common-configuration.nix
+    └── common-home.nix
+    └── hardened-ssh.nix
+    └── ...
+└── hosts/
+    └── proxmox-desktop/
+        ├── configuration.nix
+        └── home.nix
+        └── hardware-configuration.nix
+```
 
-### Minimal ssh configuration
+# Installation
 
-This is a minimal configuration based on the default to be able to ssh into a proxmox vm.
+## Proxmox sample vm config
 
 The associated vm config is:
   - OS: Use CD/DVD disc image file (iso): Choose the NixOS ISO
@@ -33,6 +48,78 @@ The associated vm config is:
     - Bridge: vmbr0
 
 **If getting an access denied error when booting from cd, disable secure boot from boot manager.**
+
+## Download iso
+
+Download ISO (graphical or minimal): https://nixos.org/download.html
+
+In Proxmox Web UI:
+- Go to local > ISO Images
+- Upload the .iso
+
+## Create partitions and Install NixOS
+
+    Start the VM and open the console
+
+    Log in as root (no password)
+
+```shell
+sudo -i
+
+lsblk
+
+cfdisk /dev/vda
+  gpt
+    1G, EFI
+    4G, Linux swap
+    rest, Linux filesystem
+  write, yes
+  quit
+
+mkfs.ext4 -L nixos /dev/vda3
+mkswap -L swap /dev/vda2
+mkfs.fat -F 32 -n boot /dev/vda1
+
+mount /dev/vda3 /mnt
+mount --mkdir /dev/vda1 /mnt/boot
+swapon /dev/vda2
+
+lsblk
+
+nixos-generate-config --root /mnt
+```
+
+## Clone repo and create machine spaecific files
+
+Clone repo
+
+```shell
+mkdir $HOSTNAME
+cp /etc/nixos/hardware-configuration.nix $HOSTNAME
+cp templates/host/*.nix $HOSTNAME
+```
+
+- Change configuration.nix (interfaceName, ipaddress, add modules, ...).
+- Change home.nix
+
+```shell
+mkdir $HOSTNAME
+cp /etc/nixos/hardware-configuration.nix $HOSTNAME
+cp templates/host/*.nix $HOSTNAME
+```
+
+```shell
+nixos-install --flake ./nixos#hostname
+```
+
+# How I created the config files in the repo
+
+## Templates
+
+### Minimal ssh configuration
+
+This is a minimal configuration based on the default to be able to ssh into a proxmox vm.
+
 
 As I used a non graphical installer I had to create the partitions. I include the commands I used.
 
