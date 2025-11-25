@@ -3,13 +3,13 @@
 {
   imports =
     [
-      ./hardware-configuration.nix
-      (import ./modules/common-configuration.nix {
+      ../hardware-configuration.nix
+      (import ../modules/common-configuration.nix {
         inherit config lib pkgs;
         interfaceName = "ens18";
         ipAddress = "192.168.1.248";
       })
-      ./modules/proxmox-guest.nix
+      ../modules/proxmox-guest.nix
     ];
 
   networking = {
@@ -21,4 +21,3 @@
 
   system.stateVersion = "25.05"; # Did you read the comment?
 }
-

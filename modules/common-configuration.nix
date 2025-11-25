@@ -1,7 +1,18 @@
 # modules/common-configuration.nix
-{ config, pkgs, ... }:
+{ config, pkgs, interfaceName, ipAddress, ... }:
+
+let
+  staticNetwork = import ./static-network.nix {
+    inherit interfaceName ipAddress;
+  };
+in
 
 {
+  imports = [
+    staticNetwork
+    ./hardened-ssh.nix
+  ];
+  
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
