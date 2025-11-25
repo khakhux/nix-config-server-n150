@@ -1,12 +1,16 @@
 { config, pkgs, ... }:
 
+let
+  users = import ../users.nix;
+in
+
 {
-  home.username = "cacu";
-  home.homeDirectory = "/home/cacu";
+  home.username = users.mainUser;
+  home.homeDirectory = "/home/${users.mainUser}";
   programs.git = {
     enable = true;
-    userName = "cacu";
-    userEmail = "cacu@email.com";
+    userName = users.mainUser;
+    userEmail = users.mainUserEmail;
   };
   home.stateVersion = "25.05";
   programs.bash = {

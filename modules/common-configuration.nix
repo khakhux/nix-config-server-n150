@@ -2,6 +2,7 @@
 { config, pkgs, interfaceName, ipAddress, ... }:
 
 let
+  users = import ../users.nix;
   staticNetwork = import ./static-network.nix {
     inherit interfaceName ipAddress;
   };
@@ -12,7 +13,7 @@ in
     staticNetwork
     ./hardened-ssh.nix
   ];
-  
+
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -26,7 +27,7 @@ in
     #   useXkbConfig = true; # use xkb.options in tty.
   };
 
-  users.users.cacu = {
+  users.users.${users.mainUser} = {
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable 'sudo' for the user.
     openssh.authorizedKeys.keyFiles = [
