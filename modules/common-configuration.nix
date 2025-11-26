@@ -21,17 +21,23 @@ in
   time.timeZone = "Europe/Madrid";
 
   i18n.defaultLocale = "es_ES.UTF-8";
-  console = {
-    #   font = "Lat2-Terminus16";
-    keyMap = "es";
-    #   useXkbConfig = true; # use xkb.options in tty.
+  i18n.supportedLocales = [
+    "en_US.UTF-8/UTF-8"
+    "es_ES.UTF-8/UTF-8"
+  ];
+  environment.variables = {
+    LC_MESSAGES = "en_US.UTF-8";
   };
+  console = {
+    keyMap = "es";
+  };
+
 
   users.users.${users.mainUser} = {
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable 'sudo' for the user.
     openssh.authorizedKeys.keyFiles = [
-      ../ssh-keys/id_ed25519_nixos.pub  # Note: relative path adjusted
+      ../ssh-keys/id_ed25519_nixos.pub
     ];
     packages = with pkgs; [
       tree
