@@ -56,8 +56,12 @@ in
     tmux
   ];
 
-  networking.firewall.enable = false;
+  networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [ 22 ];
+
+  # Enable automatic garbage collection (optional)
+  nix.gc.automatic = true;
+  nix.gc.dates = "weekly";
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 }
