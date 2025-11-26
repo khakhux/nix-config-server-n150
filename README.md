@@ -89,7 +89,7 @@ lsblk
 nixos-generate-config --root /mnt
 ```
 
-## Clone repo and create machine spaecific files
+## Clone repo and create machine specific files
 
 Clone repo
 
@@ -111,6 +111,12 @@ cp templates/host/*.nix $HOSTNAME
 ```shell
 nixos-install --flake ./nixos#hostname
 ```
+
+## The machine config files are already in the repo
+
+If the machine config files are already in the repo the repo cab be cloned and do the nixos-install or use `nixos-install --flake github:yourname/nixos-config#proxmox-desktop` command.
+
+
 
 # How I created the config files in the repo
 

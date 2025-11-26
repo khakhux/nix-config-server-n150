@@ -1,12 +1,11 @@
+{ config, ... }:
 
-# Enable the X11 windowing system.
-  # services.xserver.enable = true;
-
-  # Configure keymap in X11
-  # services.xserver.xkb.layout = "us";
-  # services.xserver.xkb.options = "eurosign:e,caps:escape";
+{
 
   # Enable sound.
+  sound.enable = true;
+  hardware.pulseaudio.enable = true;
+  # OR
   # services.pulseaudio.enable = true;
   # OR
   # services.pipewire = {
@@ -14,4 +13,32 @@
   #   pulse.enable = true;
   # };
 
+  # Enable the X11 windowing system.
+  # services.xserver.enable = true;
+
+  # KDE Plasma
+  # services.xserver.displayManager.sddm.enable = true;
+  # services.xserver.desktopManager.plasma5.enable = true;
+
+  # Allow login via GUI
+  # services.xserver.displayManager.autoLogin.enable = false;
+
+  # Configure keymap in X11
+  # services.xserver.xkb.layout = "es";
+  # services.xserver.xkb.options = "eurosign:e,caps:escape";
+
+  # Enable RDP Access
+  # services.xrdp.enable = true;
+  # services.xrdp.defaultWindowManager = "startplasma-x11";
+
+  # Desktop basic programs
   # programs.firefox.enable = true;
+  # OR
+  # environment.systemPackages = with pkgs; [
+  #   firefox
+  #   kate
+  # alacritty is a fast and declaratively configured terminal emulator
+  # https://alacritty.org/
+  #   alacritty
+  # ];
+}
