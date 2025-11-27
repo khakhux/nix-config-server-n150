@@ -13,7 +13,7 @@
     ];
 
   networking = {
-    hostName = "nixos";
+    hostName = "server-docker-01";
     networkmanager.enable = true;
   };
 

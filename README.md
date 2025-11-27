@@ -94,18 +94,26 @@ nixos-generate-config --root /mnt
 Clone repo
 
 ```shell
+cd repo
 mkdir $HOSTNAME
 cp /etc/nixos/hardware-configuration.nix $HOSTNAME
 cp templates/host/*.nix $HOSTNAME
 ```
 
-- Change configuration.nix (interfaceName, ipaddress, add modules, ...).
+- Change configuration.nix (hostname, interfaceName, ipaddress, add modules, ...).
 - Change home.nix
 
+add host to flake.nix
 ```shell
-mkdir $HOSTNAME
-cp /etc/nixos/hardware-configuration.nix $HOSTNAME
-cp templates/host/*.nix $HOSTNAME
+{
+  ...
+in {
+      nixosConfigurations = {
+        server-docker-01 = mkHost "server-docker-01";
+        new-server = mkHost "new-server";
+      };
+    };
+}
 ```
 
 ```shell
