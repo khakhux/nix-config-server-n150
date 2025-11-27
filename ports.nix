@@ -1,0 +1,5 @@
+{
+  SSH = 22;
+  HOMEASSISTANT = 8123;
+  FRIGATE = 5000;
+}
