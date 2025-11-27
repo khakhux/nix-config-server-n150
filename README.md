@@ -120,6 +120,10 @@ in {
 nixos-install --flake ./nixos#hostname
 ```
 
+## Create 2fa qr code
+
+`google-authenticator`
+
 ## The machine config files are already in the repo
 
 If the machine config files are already in the repo the repo cab be cloned and do the nixos-install or use `nixos-install --flake github:yourname/nixos-config#proxmox-desktop` command.
@@ -182,3 +186,30 @@ cp nix-config-server-n150/templates/minimal-ssh-configuration.nix /mnt/etc/nixos
 nixos-install
 ```
 
+# Docker iot nixos server
+
+- ssh hardened
+- docker and docker compose installation
+- Create docker network argea_iot
+- 2FA
+- samba
+- 4_playbook-samba.yaml
+- jq
+- yt-dlp (docker / nixos module / flatpinch)
+- raid 1 disks array
+- preparar-backups.yml
+- delay docker start to disks mounting if data is stored there (instalacion-host-domotica-ansible.md#Retrasar inicio servicio docker)
+  - duplicati
+  - jellyfin
+  - transmission
+  - music-assistant-server (/usbhdd/Music/Temas)
+  - homeassistant (/usbhdd/Music/Temas/:/mnt/music)
+  - influxdb (/backups/influxdb)
+- [#190 advanced security](https://github.com/khakhux/domotica/issues/190)
+- clone or copy /docker_data
+- copy secrets or use sops
+
+No:
+- mosquitto (lo instalo como addon de HASSOS)
+- install HACS
+- 
