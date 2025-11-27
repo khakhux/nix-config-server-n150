@@ -15,20 +15,10 @@ let
 in
 
 {
-  home.username = "tony";
-  home.homeDirectory = "/home/tony";
-  programs.git.enable = true;
-  home.stateVersion = "25.05";
-  programs.bash = {
-    enable = true;
-    shellAliases = {
-      btw = "echo i use nixos-btw";
-      nrs = "sudo nixos-rebuild switch --flake ~/nixos-dotfiles#nixos-btw";
-    };
-    initExtra = ''
-      	  export PS1="\[\e[38;5;75m\]\u@\h \[\e[38;5;113m\]\w \[\e[38;5;189m\]\$ \[\e[0m\]"
-      	'';
-  };
+
+  imports = [
+    ../../modules/common-home.nix
+  ];
 
   xdg.configFile = builtins.mapAttrs
     (name: subpath: {
