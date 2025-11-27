@@ -27,7 +27,7 @@
       };
     in {
       nixosConfigurations = {
-        nixos = mkHost "nixos";
+        server-docker-01 = mkHost "server-docker-01";
         # Add more hosts like this:
         # other-host = mkHost "other-host";
       };
