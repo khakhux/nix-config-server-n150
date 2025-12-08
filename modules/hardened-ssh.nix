@@ -46,11 +46,11 @@ with lib;
     };
 
     # Enable PAM for 2FA support
-    security.pam.services.sshd.googleAuthenticator.enable = true;
+    #security.pam.services.sshd.googleAuthenticator.enable = true;
 
     # Install google-authenticator package
-    environment.systemPackages = with pkgs; [
-      google-authenticator
-    ];
+    #environment.systemPackages = with pkgs; [
+    #  google-authenticator
+    #];
   };
 }
