@@ -94,11 +94,14 @@ nixos-generate-config --root /mnt
 Clone repo
 
 ```shell
-cd repo
+cd repo/hosts
 mkdir $HOSTNAME
 cp /etc/nixos/hardware-configuration.nix $HOSTNAME
 cp templates/host/*.nix $HOSTNAME
 ```
+
+get network interface name
+```ip link show```
 
 - Change configuration.nix (hostname, interfaceName, ipaddress, add modules, ...).
 - Change home.nix
@@ -117,8 +120,14 @@ in {
 ```
 
 ```shell
-nixos-install --flake ./nixos#hostname
+git add .
 ```
+
+```shell
+nixos-install --flake ./#hostname
+```
+
+At the end, set root password and restart.
 
 ## Create 2fa qr code
 
