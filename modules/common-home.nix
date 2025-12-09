@@ -11,6 +11,9 @@ in
     enable = true;
     userName = users.mainUser;
     userEmail = users.mainUserEmail;
+    extraConfig = {
+      pull.rebase = false;
+    };
   };
   home.stateVersion = "25.05";
   programs.bash = {
