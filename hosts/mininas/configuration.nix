@@ -11,7 +11,7 @@ in
       ./hardware-configuration.nix
       (import ../../modules/common-configuration.nix {
         inherit config lib pkgs;
-        interfaceName = "ens18";
+        interfaceName = "enp0s13f0u2u1";
         ipAddress = ips.mininas;
         extraGroups = "docker";
       })

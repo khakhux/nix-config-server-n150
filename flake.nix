@@ -28,6 +28,7 @@
     in {
       nixosConfigurations = {
         server-docker-01 = mkHost "server-docker-01";
+        mininas = mkHost "mininas";
         # Add more hosts like this:
         # other-host = mkHost "other-host";
       };
