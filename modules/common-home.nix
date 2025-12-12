@@ -29,5 +29,6 @@ in
 
   home.packages = with pkgs; [    
     neovim
+    mc # midnight commander, similar to norton commander
   ];
 }

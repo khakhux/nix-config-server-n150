@@ -47,9 +47,10 @@ in
     git
     htop
     tmux
+    usbutils
   ];
 
-  networking.firewall.enable = true;
+  #networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [ 22 ];
 
   nix.gc = {
