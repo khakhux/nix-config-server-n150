@@ -3,6 +3,8 @@
 let
   ports = import ../../ports.nix;
   ips = import ../../ips.nix;
+  users = import ../../users.nix;
+  mainUser = users.mainUser;
 in
 
 {
@@ -16,14 +18,29 @@ in
         extraGroups = "docker";
       })
       ../../modules/docker.nix
+      (import ./syncthing.nix mainUser)
     ];
 
   networking = {
     hostName = "mininas";
     networkmanager.enable = true;
-    firewall.enable = false;
-    firewall.allowedTCPPorts = [ ports.SSH ports.FRIGATE ];
+    firewall.enable = true;
+    firewall.checkReversePath = "loose";
+    firewall.allowedTCPPorts = [ 
+      ports.SSH
+      ports.FRIGATE
+      ports.TRANSMISSION
+      ports.TRANSMISSION_WEB
+    ];
+    firewall.allowedUDPPorts = [ 
+      ports.TRANSMISSION 
+    ];
   };
+
+  # Allow Transmission web interface only from your phone's static IP
+  #extraCommands = ''
+  #  iptables -A nixos-fw -p tcp --dport 9091 -s 192.168.1.50 -j nixos-fw-accept
+  #'';
 
  # Enable WireGuard kernel module
   boot.kernelModules = [ "wireguard" ];
@@ -38,7 +55,7 @@ in
   #  wireguard-tools
   #];
 
-  ssh.allowedUsers = [ "cacu" ];
+  ssh.allowedUsers = [ "${users.mainUser}" ];
 
   # Enable automatic updates (optional but good for servers)
   system.autoUpgrade.enable = true;

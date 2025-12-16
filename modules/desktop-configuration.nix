@@ -41,11 +41,20 @@
   # Desktop basic programs
   # programs.firefox.enable = true;
   # OR
-  # environment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; [
   #   firefox
   #   kate
   # alacritty is a fast and declaratively configured terminal emulator
   # https://alacritty.org/
   #   alacritty
-  # ];
+    nil          # Nix LSP server for code analysis
+    nixpkgs-fmt  # Nix Formatter (alternative is alejandra)
+  ];
+
+  programs.vscode = {
+    enable = true;
+    extensions = with pkgs.vscode-extensions; [
+      jnoortheen.nix-ide
+    ];
+  };
 }

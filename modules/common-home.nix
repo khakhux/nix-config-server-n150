@@ -13,6 +13,7 @@ in
     userEmail = users.mainUserEmail;
     extraConfig = {
       pull.rebase = false;
+      init.defaultBranch = "main";
     };
   };
   home.stateVersion = "25.05";
