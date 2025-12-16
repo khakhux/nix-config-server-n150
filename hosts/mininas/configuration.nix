@@ -18,7 +18,7 @@ in
         extraGroups = "docker";
       })
       ../../modules/docker.nix
-      (import ./syncthing.nix mainUser)
+      #(import ./syncthing.nix mainUser)
     ];
 
   networking = {

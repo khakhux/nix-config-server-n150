@@ -30,7 +30,8 @@ in
     isNormalUser = true;
     extraGroups = [ "wheel" extraGroups ]; # Enable 'sudo' for the user.
     openssh.authorizedKeys.keyFiles = [
-      ../ssh-keys/id_ed25519_nixos.pub  # Note: relative path adjusted
+      ../ssh-keys/id_ed25519_nixos.pub
+      ../ssh-keys/id_ed25519_mi9t.pub
     ];
     packages = with pkgs; [
       tree
