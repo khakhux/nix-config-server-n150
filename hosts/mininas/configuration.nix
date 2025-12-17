@@ -55,7 +55,32 @@ in
   #  wireguard-tools
   #];
 
-  ssh.allowedUsers = [ "${users.mainUser}" ];
+  users.groups.syncs = {};
+
+  users.users.syncs = {
+    isNormalUser = true;
+    group = "syncs";
+    # Setting the shell to nologin prevents interactive SSH shell access
+    shell = pkgs.shadow; 
+    openssh.authorizedKeys.keyFiles = [
+      ../../ssh-keys/id_ed25519_mi9t.pub
+    ];
+  };
+
+  ssh.allowedUsers = [ "${users.mainUser}" "syncs" ];
+  
+  services.openssh = {
+    extraConfig = ''
+      # Start restriction for the syncs user
+      Match User syncs
+        ForceCommand internal-sftp
+        AllowTcpForwarding no
+        X11Forwarding no
+        AllowAgentForwarding no
+
+      Match All
+    '';
+  };
 
   # Enable automatic updates (optional but good for servers)
   system.autoUpgrade.enable = true;

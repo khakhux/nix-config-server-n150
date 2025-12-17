@@ -32,7 +32,6 @@ in
     openssh.authorizedKeys.keyFiles = [
       ../ssh-keys/id_yubikey_usbc.pub
       ../ssh-keys/id_yubikey_usba.pub
-      ../ssh-keys/id_ed25519_mi9t.pub
     ];
     packages = with pkgs; [
       tree
