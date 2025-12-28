@@ -31,6 +31,7 @@ in
       ports.FRIGATE
       ports.TRANSMISSION
       ports.TRANSMISSION_WEB
+      ports.NFS
     ];
     firewall.allowedUDPPorts = [ 
       ports.TRANSMISSION 
@@ -81,6 +82,18 @@ in
       Match All
     '';
   };
+
+  systemd.tmpfiles.rules = [
+    "L+ /media - - - - /nvme1/media"
+    "L+ /backups - - - - /nvme2/backups"
+  ];
+
+  # fsid=0 so it works with nfs4 and doesn't need to open other ports
+  # client must mount with mininas:/
+  services.nfs.server.enable = true;
+  services.nfs.server.exports = ''
+    /media/Music/Temas 192.168.1.0/24(ro,sync,no_subtree_check,fsid=0)
+  '';
 
   # Enable automatic updates (optional but good for servers)
   system.autoUpgrade.enable = true;
