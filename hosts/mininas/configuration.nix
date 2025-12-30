@@ -32,9 +32,18 @@ in
       ports.TRANSMISSION
       ports.TRANSMISSION_WEB
       ports.NFS
+      ports.MUSIC_ASSISTANT_UI
+      ports.MUSIC_ASSISTANT_WEB_SOCKET
+      ports.MUSIC_ASSISTANT_SERVICE_PORT
+      #ports.MUSIC_ASSISTANT_SNAPCAST_STREAM
+      #ports.MUSIC_ASSISTANT_SNAPCAST_CONTROL
+      ports.JELLYFIN
+      ports.RCLONE
     ];
     firewall.allowedUDPPorts = [ 
       ports.TRANSMISSION 
+      ports.MUSIC_ASSISTANT_UDP_MDNS
+      ports.MUSIC_ASSISTANT_UDP_SSDP
     ];
   };
 
@@ -94,6 +103,14 @@ in
   services.nfs.server.exports = ''
     /media/Music/Temas 192.168.1.0/24(ro,sync,no_subtree_check,fsid=0)
   '';
+
+  services.cron = {
+    enable = true;
+    systemCronJobs = [
+      "50 22 * * * cacu /bin/bash /docker_data/scripts/backup/bak_git.sh >> /home/cacu/bak_git.log 2>&1"
+      #"30 23 * * * cacu /docker_data/scripts/rclone/sync.sh || /docker_data/scripts/notify.sh 'error sinc drive'"
+    ];
+  };
 
   # Enable automatic updates (optional but good for servers)
   system.autoUpgrade.enable = true;
