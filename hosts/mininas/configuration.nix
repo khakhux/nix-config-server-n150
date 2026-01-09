@@ -37,8 +37,10 @@ in
       ports.MUSIC_ASSISTANT_SERVICE_PORT
       #ports.MUSIC_ASSISTANT_SNAPCAST_STREAM
       #ports.MUSIC_ASSISTANT_SNAPCAST_CONTROL
+      ports.MUSIC_ASSISTANT_GOOGLE_CAST_TCP
       ports.JELLYFIN
       ports.RCLONE
+      ports.MITM_PROXY
     ];
     firewall.allowedUDPPorts = [ 
       ports.TRANSMISSION 
@@ -64,6 +66,10 @@ in
   #environment.systemPackages = with pkgs; [
   #  wireguard-tools
   #];
+
+  environment.systemPackages = with pkgs; [
+    mitmproxy
+  ];
 
   users.groups.syncs = {};
 
@@ -107,7 +113,7 @@ in
   services.cron = {
     enable = true;
     systemCronJobs = [
-      "50 22 * * * cacu /bin/bash /docker_data/scripts/backup/bak_git.sh >> /home/cacu/bak_git.log 2>&1"
+      "50 22 * * * cacu /docker_data/scripts/backup/bak_git.sh >> /home/cacu/bak_git.log 2>&1"
       #"30 23 * * * cacu /docker_data/scripts/rclone/sync.sh || /docker_data/scripts/notify.sh 'error sinc drive'"
     ];
   };
