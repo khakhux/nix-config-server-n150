@@ -1,5 +1,9 @@
 { config, lib, pkgs, ... }:
 
+let
+  users = import ../users.nix;
+in
+
 {
   imports =
     [
@@ -22,7 +26,7 @@
     networkmanager.enable = true;
   };
 
-  ssh.allowedUsers = [ "cacu" ];
+  ssh.allowedUsers = [ "${users.mainUser}" ];
 
   system.stateVersion = "25.05"; # Did you read the comment?
 }

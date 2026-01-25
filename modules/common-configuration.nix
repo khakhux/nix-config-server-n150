@@ -5,6 +5,7 @@ let
   staticNetwork = import ./static-network.nix {
     inherit interfaceName ipAddress;
   };
+  users = import ../users.nix;
 in
 
 {
@@ -26,7 +27,7 @@ in
     #   useXkbConfig = true; # use xkb.options in tty.
   };
 
-  users.users.cacu = {
+  users.users.${users.mainUser} = {
     isNormalUser = true;
     extraGroups = [ "wheel" extraGroups ]; # Enable 'sudo' for the user.
     openssh.authorizedKeys.keyFiles = [

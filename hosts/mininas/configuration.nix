@@ -29,6 +29,7 @@ in
     firewall.allowedTCPPorts = [ 
       ports.SSH
       ports.FRIGATE
+      ports.RTSP
       ports.TRANSMISSION
       ports.TRANSMISSION_WEB
       ports.NFS
@@ -41,6 +42,8 @@ in
       ports.JELLYFIN
       ports.RCLONE
       ports.MITM_PROXY
+      ports.DUPLICATI
+      ports.PINCHFLAT
     ];
     firewall.allowedUDPPorts = [ 
       ports.TRANSMISSION 
@@ -69,6 +72,11 @@ in
 
   environment.systemPackages = with pkgs; [
     mitmproxy
+    jq
+  ];
+
+  users.users.${users.mainUser}.openssh.authorizedKeys.keys = [   
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDCuwzJh2u6enFsZNf2t9d0O8GQ8OetDufLpaHMsolph rpi42@email.com"
   ];
 
   users.groups.syncs = {};
@@ -76,10 +84,12 @@ in
   users.users.syncs = {
     isNormalUser = true;
     group = "syncs";
+    extraGroups = [ "docker" ];
     # Setting the shell to nologin prevents interactive SSH shell access
     shell = pkgs.shadow; 
     openssh.authorizedKeys.keyFiles = [
       ../../ssh-keys/id_ed25519_mi9t.pub
+      ./docker_data_argea.pub
     ];
   };
 
@@ -101,6 +111,7 @@ in
   systemd.tmpfiles.rules = [
     "L+ /media - - - - /nvme1/media"
     "L+ /backups - - - - /nvme2/backups"
+    "L+ /datos - - - - /nvme1/datos"
   ];
 
   # fsid=0 so it works with nfs4 and doesn't need to open other ports
@@ -113,8 +124,10 @@ in
   services.cron = {
     enable = true;
     systemCronJobs = [
-      "50 22 * * * cacu /docker_data/scripts/backup/bak_git.sh >> /home/cacu/bak_git.log 2>&1"
-      #"30 23 * * * cacu /docker_data/scripts/rclone/sync.sh || /docker_data/scripts/notify.sh 'error sinc drive'"
+      "50 22 * * * ${users.mainUser} /docker_data/scripts/backup/bak_git.sh >> /home/${users.mainUser}/bak_git.log 2>&1"
+      #"30 23 * * * ${users.mainUser} /docker_data/scripts/rclone/sync.sh || /docker_data/scripts/notify.sh 'error sinc drive'"
+      "00 23 * * * ${users.mainUser} /docker_data/ytdl-sub/run.sh >> /home/${users.mainUser}/ytdl-sub.log 2>&1"
+      "50 23 * * * ${users.mainUser} /docker_data/ytdl-sub/mv-watchlater-movil.sh >> /home/${users.mainUser}/watchlater-movil.log 2>&1"
     ];
   };
 
