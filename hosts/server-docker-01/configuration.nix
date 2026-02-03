@@ -2,6 +2,7 @@
 
 let
   ports = import ../../ports.nix;
+  users = import ../users.nix;
 in
 
 {
@@ -25,7 +26,7 @@ in
     firewall.allowedTCPPorts = [ ports.SSH ports.FRIGATE ];
   };
 
-  ssh.allowedUsers = [ "cacu" ];
+  ssh.allowedUsers = [ "${users.mainUser}" ];
 
   # Enable automatic updates (optional but good for servers)
   system.autoUpgrade.enable = true;

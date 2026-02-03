@@ -4,6 +4,10 @@
 
 { config, lib, pkgs, ... }:
 
+let
+  users = import ../users.nix;
+in
+
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -68,12 +72,12 @@
   # services.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.cacu = {
+  users.users.${users.mainUser} = {
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
     #initialPassword = "changeme";
     openssh.authorizedKeys.keyFiles = [
-      /home/cacu/nixos/ssh-keys/id_ed25519_nixos.pub
+      /home/${users.mainUser}/nixos/ssh-keys/id_ed25519_nixos.pub
     ];
     packages = with pkgs; [
        tree

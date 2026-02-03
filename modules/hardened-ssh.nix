@@ -3,11 +3,15 @@
 
 with lib;
 
+let
+  users = import ../users.nix;
+in
+
 {
   options = {
     ssh.allowedUsers = mkOption {
       type = types.listOf types.str;
-      default = [ "cacu" ];
+      default = [ "${users.mainUser}" ];
       description = "List of users allowed to log in via SSH.";
     };
   };
