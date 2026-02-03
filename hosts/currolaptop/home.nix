@@ -13,10 +13,22 @@ in
   ];
 
   programs.git = {
+    enable = true;
+    userName = "sgen0291";
+    userEmail = "crparedes@igae.hacienda.gob.es";
     extraConfig = {
-      http.sslCAInfo = "cacerts/CARaiz.pem";
+      pull.rebase = false;
+      init.defaultBranch = "main";
+      http.sslCAInfo = "${config.home.homeDirectory}/.config/nixos-cacerts/ca-bundle.crt";
     };
   };
 
+  home.file.".config/nixos-cacerts/ca-bundle.crt" = {
+    source = pkgs.runCommand "ca-bundle.crt" {} ''
+      cat ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt > $out
+      echo "" >> $out
+      cat ${./cacerts/CARaiz.pem} >> $out
+    '';
+  };
   home.file.".m2/settings.xml".source = "${mavenSettingsRepo}/maven/settings.xml";
 }
