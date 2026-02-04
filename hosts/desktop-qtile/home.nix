@@ -18,6 +18,7 @@ in
 
   imports = [
     ../../modules/common-home.nix
+    ../../modules/git.nix
   ];
 
   xdg.configFile = builtins.mapAttrs
