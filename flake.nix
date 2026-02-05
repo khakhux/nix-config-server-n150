@@ -17,7 +17,24 @@
       system = "x86_64-linux";
       users = import ./users.nix;
       
+      # Generic host builder without pinned versions
       mkHost = hostName: nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = [
+          ./hosts/${hostName}/configuration.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.${users.mainUser} = import ./hosts/${hostName}/home.nix;
+            home-manager.backupFileExtension = "backup";
+          }
+          nixos-wsl.nixosModules.default
+        ];
+      };
+      
+      # Host builder with pinned Java and Maven versions
+      mkHostWithPinnedJavaMaven = hostName: nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { 
           inherit nixpkgs-maven386 nixpkgs-jdk2102;
@@ -38,7 +55,7 @@
       nixosConfigurations = {
         server-docker-01 = mkHost "server-docker-01";
         mininas = mkHost "mininas";
-        currolaptop = mkHost "currolaptop";
+        currolaptop = mkHostWithPinnedJavaMaven "currolaptop";
         # Add more hosts like this:
         # other-host = mkHost "other-host";
       };
