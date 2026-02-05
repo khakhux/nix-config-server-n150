@@ -50,32 +50,40 @@ in
   ];
 
   environment.systemPackages = with pkgs; [
+    #https://mynixos.com/nixpkgs/package/
     pkgs.wget
     # https://nixos.wiki/wiki/Java#Overriding_java_jks_Certificate_Store
     jdk21
     # https://ryantm.github.io/nixpkgs/languages-frameworks/maven/
     maven
     vscode
-    #intellij idea
-    #DbVisualizer
-    #KeyStore Explorer
+    jetbrains.idea-ultimate #/ jetbrains.idea-community
+    #dbvisualizer
+    #keystore-explorer
     #node.js
     #python
     #postman
     #soapui
     #wireshark
+    #gh  # GitHub CLI
     jq
     firefox
     nil          # Nix LSP server for code analysis
     nixpkgs-fmt  # Nix Formatter (alternative is alejandra)
     #keepassxc
-    #pdf viewer
+    #zathura / mupdf #pdf viewer
     #arduino
-    #autofirma
-    #screenshot tool
-    #irfanview
+    #flameshot # screenshot tool
+    #nomacs # image viewer 
     #obsidian
-    #winscp
+    # wrapper with specific JVM options example
+    #(writeShellScriptBin "idea" ''
+    #  exec ${jetbrains.idea-ultimate}/bin/idea-ultimate \
+    #    -Dsun.java2d.xrender=false \
+    #    -Dsun.java2d.opengl=false \
+    #    -Dawt.useSystemAAFontSettings=lcd \
+    #    "$@"
+    #'')
   ];
 
   #system.activationScripts.make-jdk-dir = "mkdir -p /usr/lib/jvm/default-jdk";
