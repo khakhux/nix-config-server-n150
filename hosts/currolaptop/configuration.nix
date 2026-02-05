@@ -36,6 +36,10 @@ let
       }
     else
       pkgs.maven.override { jdk = jdk21-pinned; };
+
+  keystore-explorer-jdk21 = pkgs.keystore-explorer.override {
+    jdk = jdk21-pinned;
+  };
 in
 
 {
@@ -85,7 +89,7 @@ in
     vscode
     jetbrains.idea-ultimate #/ jetbrains.idea-community
     #dbvisualizer
-    #keystore-explorer
+    keystore-explorer-jdk21
     #node.js
     #python
     #postman
