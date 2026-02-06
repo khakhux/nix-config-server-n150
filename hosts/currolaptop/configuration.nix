@@ -5,41 +5,12 @@
 # NixOS-WSL specific options are documented on the NixOS-WSL repository:
 # https://github.com/nix-community/NixOS-WSL
 
-{ config, lib, pkgs, nixpkgs-maven386 ? null, nixpkgs-jdk2102 ? null, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   ips = import ../../ips.nix;
   users = import ../../users.nix;
   mainUser = users.mainUser;
-  
-  # Only use pinned versions if the inputs are provided
-  jdk21-pinned = 
-    if nixpkgs-jdk2102 != null then
-      let
-        pkgs-jdk2102 = import nixpkgs-jdk2102 { 
-          inherit (pkgs) system; 
-          config.allowUnfree = true;
-        };
-      in pkgs-jdk2102.jdk21
-    else
-      pkgs.jdk21;
-  
-  maven386-jdk21 = 
-    if nixpkgs-maven386 != null then
-      let
-        pkgs-maven386 = import nixpkgs-maven386 { 
-          inherit (pkgs) system; 
-          config.allowUnfree = true;
-        };
-      in pkgs-maven386.maven.override { 
-        jdk = jdk21-pinned; 
-      }
-    else
-      pkgs.maven.override { jdk = jdk21-pinned; };
-
-  keystore-explorer-jdk21 = pkgs.keystore-explorer.override {
-    jdk = jdk21-pinned;
-  };
 in
 
 {
@@ -81,15 +52,10 @@ in
   environment.systemPackages = with pkgs; [
     #https://mynixos.com/nixpkgs/package/
     pkgs.wget
-    # https://nixos.wiki/wiki/Java#Overriding_java_jks_Certificate_Store
-    jdk21-pinned
-    # https://ryantm.github.io/nixpkgs/languages-frameworks/maven/
-    # Maven 3.8.6 configured to use JDK 21
-    maven386-jdk21
     vscode
     jetbrains.idea-ultimate #/ jetbrains.idea-community
     #dbvisualizer
-    keystore-explorer-jdk21
+    #keystore-explorer
     #node.js
     #python
     #postman
