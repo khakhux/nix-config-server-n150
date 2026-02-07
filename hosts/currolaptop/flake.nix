@@ -30,11 +30,6 @@
       maven386-jdk21 = pkgs-maven386.maven.override { 
         jdk = jdk21-pinned; 
       };
-
-      # Keystore Explorer with JDK 21
-      keystore-explorer-jdk21 = pkgs.keystore-explorer.override {
-        jdk = jdk21-pinned;
-      };
     in {
       devShells.${system}.default = pkgs.mkShell {
         name = "java-maven-dev";
@@ -42,7 +37,6 @@
         buildInputs = [
           jdk21-pinned
           maven386-jdk21
-          keystore-explorer-jdk21
         ];
         
         shellHook = ''

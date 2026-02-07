@@ -55,7 +55,7 @@ in
     vscode
     jetbrains.idea-ultimate #/ jetbrains.idea-community
     #dbvisualizer
-    #keystore-explorer
+    keystore-explorer
     #node.js
     #python
     #postman
