@@ -6,6 +6,7 @@ let
     rev = "master"; #"61841ca3b665c3e667b3a4bdac03db8217de5fb3";  # specific commit hash
     sha256 = "sha256-eNWSqXz54TZQAzLobmRiLqSYYkDtsCf2ArHsNS/ndHc=";
   };
+  envs = import ./env.nix;
 in
 {
   imports = [
@@ -14,8 +15,8 @@ in
 
   programs.git = {
     enable = true;
-    userName = "sgen0291";
-    userEmail = "crparedes@igae.hacienda.gob.es";
+    userName = envs.gitUser;
+    userEmail = envs.gitEmail;
     extraConfig = {
       pull.rebase = false;
       init.defaultBranch = "main";

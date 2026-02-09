@@ -8,9 +8,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  ips = import ../../ips.nix;
-  users = import ../../users.nix;
-  mainUser = users.mainUser;
+  envs = import ./env.nix;
 in
 
 {
@@ -24,11 +22,11 @@ in
   ];
 
   wsl.enable = true;
-  wsl.defaultUser = "cacu";
+  wsl.defaultUser = envs.mainUser;
 
   networking = {
     networkmanager.enable = true;
-    hostName = "currolaptop";
+    hostName = envs.hostname;
   };
 
   time.timeZone = "Europe/Madrid";
@@ -40,13 +38,13 @@ in
     #   useXkbConfig = true; # use xkb.options in tty.
   };
 
-  users.users.cacu = {
+  users.users.${envs.mainUser} = {
     isNormalUser = true;
     extraGroups = [ "wheel" "docker" ]; # Enable 'sudo' for the user.
   };
 
   security.pki.certificateFiles = [
-    cacerts/CARaiz.pem
+    ./cacerts/CARaiz.pem
   ];
 
   environment.systemPackages = with pkgs; [
