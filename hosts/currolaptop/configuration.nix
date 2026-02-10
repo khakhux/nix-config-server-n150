@@ -43,6 +43,23 @@ in
     extraGroups = [ "wheel" "docker" ]; # Enable 'sudo' for the user.
   };
 
+  # Create docker_data directory with base compose config
+  system.activationScripts.docker-data-setup = ''
+    mkdir -p /docker_data
+    chown ${envs.mainUser}:users /docker_data
+    chmod 755 /docker_data
+    
+    cat > /docker_data/docker-compose-base.yml << 'EOF'
+services:
+  ssl-base:
+    volumes:
+      - /etc/ssl/certs/ca-bundle.crt:/etc/ssl/certs/ca-bundle.crt:ro
+    environment:
+      - SSL_CERT_FILE=/etc/ssl/certs/ca-bundle.crt
+EOF
+    chown ${envs.mainUser}:users /docker_data/docker-compose-base.yml
+  '';
+
   security.pki.certificateFiles = [
     ./cacerts/CARaiz.pem
   ];
