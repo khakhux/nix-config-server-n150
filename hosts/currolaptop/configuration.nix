@@ -77,6 +77,7 @@ EOF
     #soapui
     #wireshark
     #gh  # GitHub CLI
+    opencode
     jq
     firefox
     nil          # Nix LSP server for code analysis
