@@ -21,6 +21,8 @@ in
       #(import ./syncthing.nix mainUser)
     ];
 
+  boot.supportedFilesystems = [ "ntfs" ];
+
   networking = {
     hostName = "mininas";
     networkmanager.enable = true;
@@ -73,6 +75,7 @@ in
   environment.systemPackages = with pkgs; [
     mitmproxy
     jq
+    gocatcli
     # system configued script example, run with mys-awesone-script
     (import ../../scripts/my-awesome-script.nix { inherit pkgs; })
   ];
