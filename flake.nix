@@ -5,9 +5,12 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    nix-index-database.url = "github:nix-community/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = { self, nixpkgs, home-manager, nix-index-database, ... }:
     let
       system = "x86_64-linux";
       users = import ./users.nix;
@@ -16,6 +19,9 @@
         inherit system;
         modules = [
           ./hosts/${hostName}/configuration.nix
+          nix-index-database.nixosModules.default
+          # optional to also wrap and install comma
+          # { programs.nix-index-database.comma.enable = true; }
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
