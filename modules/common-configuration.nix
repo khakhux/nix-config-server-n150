@@ -20,7 +20,16 @@ in
 
   time.timeZone = "Europe/Madrid";
 
-  i18n.defaultLocale = "es_ES.UTF-8";
+  i18n.defaultLocale = "en_US.UTF-8";
+  
+  i18n.extraLocaleSettings = {
+    LC_TIME = "es_ES.UTF-8";
+    LC_MONETARY = "es_ES.UTF-8";
+    LC_PAPER = "es_ES.UTF-8";
+    LC_MEASUREMENT = "es_ES.UTF-8";
+    LC_MESSAGES = "en_US.UTF-8";
+  };
+
   console = {
     #   font = "Lat2-Terminus16";
     keyMap = "es";
