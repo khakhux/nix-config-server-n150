@@ -104,6 +104,7 @@ in
     extraConfig = ''
       # Start restriction for the syncs user
       Match User syncs
+        # ChrootDirectory /backups
         ForceCommand internal-sftp
         AllowTcpForwarding no
         X11Forwarding no
