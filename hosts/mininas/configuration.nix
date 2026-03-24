@@ -78,6 +78,7 @@ in
     gocatcli
     # system configued script example, run with mys-awesone-script
     (import ../../scripts/my-awesome-script.nix { inherit pkgs; })
+    mosquitto
   ];
 
   users.users.${users.mainUser}.openssh.authorizedKeys.keys = [   
@@ -118,6 +119,8 @@ in
     "L+ /media - - - - /nvme1/media"
     "L+ /backups - - - - /nvme2/backups"
     "L+ /datos - - - - /nvme1/datos"
+    "d /mnt/bitlocker-raw 0755 root root -"
+    "d /mnt/bitlocker 0755 root root -"
   ];
 
   # fsid=0 so it works with nfs4 and doesn't need to open other ports
