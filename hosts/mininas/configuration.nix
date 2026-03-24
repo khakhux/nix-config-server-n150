@@ -46,6 +46,7 @@ in
       ports.MITM_PROXY
       ports.DUPLICATI
       ports.PINCHFLAT
+      ports.GPODDER
     ];
     firewall.allowedUDPPorts = [ 
       ports.TRANSMISSION 
