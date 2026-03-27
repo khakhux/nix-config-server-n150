@@ -116,6 +116,10 @@ in
     '';
   };
 
+  services.tailscale = {
+    enable = true;
+  };
+
   systemd.tmpfiles.rules = [
     "L+ /media - - - - /nvme1/media"
     "L+ /backups - - - - /nvme2/backups"
