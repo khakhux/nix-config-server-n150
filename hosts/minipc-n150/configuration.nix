@@ -2,19 +2,26 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, lib, pkgs, pkgsUnstable, ... }:
+
+let
+  envs = import ./user.nix;
+in
 
 {
   imports =
-    [ # Include the results of the hardware scan.
-      /etc/nixos/hardware-configuration.nix
+    [
+      ./hardware-configuration.nix
     ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nixos"; # Define your hostname.
+  # Use latest kernel.
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  networking.hostName = "minipc-n150"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -43,16 +50,17 @@
   };
 
   # Enable the X11 windowing system.
+  # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
 
   # Enable the KDE Plasma Desktop Environment.
-  services.xserver.displayManager.sddm.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
+  services.displayManager.sddm.enable = true;
+  services.desktopManager.plasma6.enable = true;
 
   # Configure keymap in X11
-  services.xserver = {
+  services.xserver.xkb = {
     layout = "es";
-    xkbVariant = "";
+    variant = "";
   };
 
   # Configure console keymap
@@ -62,8 +70,7 @@
   services.printing.enable = true;
 
   # Enable sound with pipewire.
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -81,64 +88,43 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  # Enable common container config files in /etc/containers
-  virtualisation = {
-      containers.enable = true;
-      containers.storage.settings = {
-      storage = {
-        driver = "overlay";
-        runroot = "/run/containers/storage";
-        graphroot = "/var/lib/containers/storage";
-        rootless_storage_path = "/tmp/containers-$USER";
-        options.overlay.mountopt = "nodev,metacopy=on";
-      };
-    };
-    oci-containers.backend = "podman";
-
-    podman = {
-      enable = true;
-
-      # Create a `docker` alias for podman, to use it as a drop-in replacement
-      dockerCompat = true;
-
-      # Required for containers under podman-compose to be able to talk to each other.
-      defaultNetwork.settings.dns_enabled = true;
-    };
-  };
-  environment.extraInit = ''
-    if [ -z "$DOCKER_HOST" -a -n "$XDG_RUNTIME_DIR" ]; then
-      export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
-    fi
-  '';
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.cacu = {
     isNormalUser = true;
-    description = "cacu";
+    description = "carlos";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      firefox
-      kate
+      kdePackages.kate
     #  thunderbird
-      vscode
-      git
-      keepassxc
-      dive # look into docker image layers
-      podman-tui # status of containers in the terminal
-      docker-compose # start group of containers for dev
-      #podman-compose # start group of containers for dev
     ];
   };
 
-  # Allow unfree packages
+  # Install firefox.
+  programs.firefox.enable = true;
+
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "vscode"
+  ];
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #  wget
-  ];
+    git
+    vscode
+    nil          # Nix LSP server for code analysis
+    nixpkgs-fmt  # Nix Formatter (alternative is alejandra)
+    gocatcli
+    keepassxc
+    #chromium
+    #gparted
+    #smartmontools
+    #steam
+    #vlc
+    #ffmpeg
+];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -159,12 +145,20 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
+
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "23.11"; # Did you read the comment?
+  system.stateVersion = "25.11"; # Did you read the comment?
 
 }

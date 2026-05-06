@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -11,13 +12,22 @@
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-index-database, nixos-wsl, ... }:
+  outputs = inputs@{ self, nixpkgs, home-manager, nix-index-database, nixos-wsl, ... }:
     let
       system = "x86_64-linux";
-      users = import ./users.nix;
       
-      mkHost = hostName: nixpkgs.lib.nixosSystem {
-        inherit system;
+      mkHost = hostName: 
+        let
+          users = import ./hosts/${hostName}/user.nix;
+          pkgsUnstable = import inputs.nixpkgs-unstable {
+            inherit system;
+            config.allowUnfree = true;
+          };
+        in nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = {
+            inherit pkgsUnstable;
+          };
         modules = [
           ./hosts/${hostName}/configuration.nix
           nix-index-database.nixosModules.default
@@ -38,6 +48,7 @@
         server-docker-01 = mkHost "server-docker-01";
         mininas = mkHost "mininas";
         currolaptop = mkHost "currolaptop";
+        minipc-n150 = mkHost "minipc-n150";
         # Add more hosts like this:
         # other-host = mkHost "other-host";
       };
