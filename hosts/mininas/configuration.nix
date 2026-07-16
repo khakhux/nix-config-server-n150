@@ -82,6 +82,7 @@ in
     # system configued script example, run with mys-awesone-script
     (import ../../scripts/my-awesome-script.nix { inherit pkgs; })
     mosquitto
+    gocryptfs
   ];
 
   users.users.${users.mainUser}.openssh.authorizedKeys.keys = [   
