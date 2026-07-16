@@ -18,7 +18,6 @@ in
         extraGroups = "docker";
       })
       ../../modules/docker.nix
-      ../../services/radicale.nix
       #(import ./syncthing.nix mainUser)
     ];
 
@@ -48,7 +47,7 @@ in
       ports.DUPLICATI
       ports.PINCHFLAT
       ports.GPODDER
-      #ports.RADICALE
+      ports.RADICALE
     ];
     firewall.allowedUDPPorts = [ 
       ports.TRANSMISSION 
@@ -86,8 +85,6 @@ in
 
   users.users.${users.mainUser}.openssh.authorizedKeys.keys = [   
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDCuwzJh2u6enFsZNf2t9d0O8GQ8OetDufLpaHMsolph rpi42@email.com"
-    "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAINHkjKOBWHe6harEMUMal9kFyyGvdBSX89B/3n1PQ/nUAAAABHNzaDo= khakhux"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPMxhD/WfXPCo6Z520YhHZYl00iR8rUWiAkSxojM5xnB git-syncs"
   ];
 
   users.groups.syncs = {};
@@ -130,7 +127,23 @@ in
     "L+ /datos - - - - /nvme1/datos"
     "d /mnt/bitlocker-raw 0755 root root -"
     "d /mnt/bitlocker 0755 root root -"
+    # Create radicale config directory and empty htpasswd file if missing
+    "d /etc/radicale 0750 radicale radicale -"
+    "f /etc/radicale/users 0640 radicale radicale -"
   ];
+
+  services.radicale = {
+    enable = true;
+    settings = {
+      server.hosts = [ "0.0.0.0:5232" ];
+      auth = {
+        type = "htpasswd";
+        htpasswd_filename = "/etc/radicale/htpasswd";
+        htpasswd_encryption = "bcrypt";
+      };
+      storage.filesystem_folder = "/var/lib/radicale/collections";
+    };
+  };
 
   # fsid=0 so it works with nfs4 and doesn't need to open other ports
   # client must mount with mininas:/
