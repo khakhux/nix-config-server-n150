@@ -20,6 +20,7 @@ in
       ../../modules/docker.nix
       ../../services/radicale.nix
       #(import ./syncthing.nix mainUser)
+      ./samba.nix
     ];
 
   boot.supportedFilesystems = [ "ntfs" ];
