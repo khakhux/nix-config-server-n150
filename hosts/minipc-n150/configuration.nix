@@ -17,6 +17,16 @@ in
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  #boot.loader.grub = {
+  #  enable = true;
+  #  device = "nodev";           # EFI mode, no MBR
+  #  efiSupport = true;
+  #  useOSProber = true;         # auto-detects Windows
+  #  default = 0;                # 0 = first entry;
+  #  timeout = 5;                # seconds before booting default
+  #};
+  #boot.loader.efi.canTouchEfiVariables = true;
+  #boot.loader.efi.efiSysMountPoint = "/boot";
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -88,6 +98,11 @@ in
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = false;
+  };
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.cacu = {
     isNormalUser = true;
@@ -105,6 +120,8 @@ in
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     "vscode"
+    "steam"
+    "steam-unwrapped"
   ];
 
   # List packages installed in system profile. To search, run:
@@ -124,7 +141,16 @@ in
     #steam
     #vlc
     #ffmpeg
+    p7zip
+    vlc
+    veracrypt
+    brave
+    #pkgsUnstable.calibre
 ];
+
+programs.steam = {
+  enable = true;
+};
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
