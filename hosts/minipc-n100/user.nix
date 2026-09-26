@@ -1,6 +1,6 @@
 {
   mainUser = "cacu";
-  hostname = "minipc-n150";
+  hostname = "minipc-n100";
   gitUser = "cacu";
   gitEmail = "cacu@email.com";
 }
